@@ -32,14 +32,21 @@ public class TempratureService {
         }
     }
 
+    /**
+     * Extract temprature from the following format.
+     * /dev/hidraw1 0: temperature 30.00 °C
+     * @param toolLog
+     */
     public void recordTemprature(String toolLog) {
         try {
-            float temprature = Float.parseFloat(toolLog);
+            String temp = toolLog.split(" ")[3];
+            float temprature = Float.parseFloat(temp);
             repository.recordTemprature(temprature, MY_HOME_ID);
             repository.refreshTempratureSummary();
             repository.refreshTempratureTotalCount();
         } catch (RuntimeException ex) {
             LOGGER.error("failed!: " + toolLog, ex);
+            throw ex;
         }
     }
 
