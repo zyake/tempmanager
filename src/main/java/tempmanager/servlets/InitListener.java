@@ -21,7 +21,8 @@ public class InitListener implements ServletContextListener {
         ServletContext servletContext = servletContextEvent.getServletContext();
 
         Transactions trns = getBasicTransactions(servletContext);
-        TempratureRepository tempratureRepository = new TempratureRepository(trns.getQueryExecutor((e) -> { throw new RuntimeException(e); }));
+        String sqlDirPath = servletContext.getRealPath("/WEB-INF/sqls");
+        TempratureRepository tempratureRepository = new TempratureRepository(trns.getQueryExecutor(sqlDirPath, (e) -> { throw new RuntimeException(e); }));
         TempratureService statusService = new TempratureService(tempratureRepository);
 
         servletContext.addServlet("status", new StatusServlet(trns.getTransactionRunner(), statusService))

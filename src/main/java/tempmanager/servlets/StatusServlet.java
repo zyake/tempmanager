@@ -1,6 +1,5 @@
 package tempmanager.servlets;
 
-import tempmanager.models.RecordStatus;
 import tempmanager.models.StatusResult;
 import tempmanager.services.TempratureService;
 
@@ -24,15 +23,16 @@ public class StatusServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setHeader("Cache-Control", "no-cache");
         trns.accept(() -> {
             StatusResult status = statusService.TempratureStatus();
             req.setAttribute("timezone", status.GetTimezone());
             req.setAttribute("status", status.getStatus());
             req.setAttribute("histories", status.getHisoties());
 
-            RecordStatus recordStatus = statusService.getRecordStatus();
-            req.setAttribute("recordTotal", recordStatus.getRecordCount());
-            req.setAttribute("todayTotal", recordStatus.getTodayRecordCount());
+            int recordTotal = statusService.getRecordTotal();
+            req.setAttribute("recordTotal", recordTotal);
+            req.setAttribute("todayTotal", status.getHisoties().get(0).getCount());
         });
 
         req.getRequestDispatcher("/status.jsp").forward(req, resp);

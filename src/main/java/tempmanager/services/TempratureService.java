@@ -36,14 +36,14 @@ public class TempratureService {
         try {
             float temprature = Float.parseFloat(toolLog);
             repository.recordTemprature(temprature, MY_HOME_ID);
+            repository.refreshTempratureSummary();
+            repository.refreshTempratureTotalCount();
         } catch (RuntimeException ex) {
             LOGGER.error("failed!: " + toolLog, ex);
         }
     }
 
-    public RecordStatus getRecordStatus() {
-        int recordCount = repository.getRecordCount();
-        int todayRecords = repository.countTodayRecords();
-        return new RecordStatus(recordCount, todayRecords);
+    public int getRecordTotal() {
+        return repository.getRecordCount();
     }
 }

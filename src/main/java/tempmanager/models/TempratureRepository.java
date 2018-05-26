@@ -15,39 +15,36 @@ public class TempratureRepository {
     public TempratureStatus getTempratureStatus() {
         List<TempratureStatus> results = executor.executeQuery(
                 rs -> new TempratureStatus(rs.getFloat(1), rs.getString(2)),
-                "SELECT temprature, recorded_timestamp FROM temprature_records " +
-                        "WHERE id = ( SELECT MAX(id) FROM temprature_records )");
+                "getTempratureStatus");
         return results.get(0);
     }
 
     public List<TempratureHistory> listTempratureHitories() {
         return executor.executeQuery((rs) -> new TempratureHistory(
-                rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)),
-                "SELECT MAX(temprature), MIN(temprature), AVG(temprature), timestamp_date  " +
-                        "FROM temprature_records " +
-                        "GROUP BY timestamp_date " +
-                        "ORDER BY timestamp_date DESC");
+                rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5)),
+                "listTempratureHistories");
     }
 
     public String getTimeZone() {
-        List<String> results = executor.executeQuery((rs) -> rs.getString(1), "SHOW timezone");
-
+        List<String> results = executor.executeQuery((rs) -> rs.getString(1), "getTimezone");
         return results.get(0);
     }
 
     public void recordTemprature(float temp, int locationId) {
-        executor.execute("INSERT INTO temprature_records(id, recorded_timestamp, timestamp_date, temprature, locations_id) " +
-                "VALUES(NEXTVAL('temprature_records_seq'), current_timestamp,current_timestamp::date, ?, ?)", temp, locationId);
+        executor.execute("recordTemprature", temp, locationId);
     }
 
     public int getRecordCount() {
-        List<Integer> intValues = executor.executeQuery((rs) -> rs.getInt(1), "SELECT COUNT(*) AS COUNT FROM temprature_records");
+        List<Integer> intValues = executor.executeQuery((rs) -> rs.getInt(1), "getRecordCount");
         return intValues.get(0);
     }
 
-    public int countTodayRecords() {
-        List<Integer> intValues = executor.executeQuery((rs) -> rs.getInt(1), "SELECT COUNT(*) AS COUNT FROM temprature_records " +
-                "WHERE recorded_timestamp BETWEEN  current_date::timestamp AND (current_date || ' 23:59:59+09')::timestamp");
-        return intValues.get(0);
+    public void refreshTempratureSummary() {
+        executor.execute("refreshTempratureSummary");
     }
+
+    public void refreshTempratureTotalCount() {
+        executor.execute("refreshTotalCount");
+    }
+
 }

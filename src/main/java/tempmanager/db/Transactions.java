@@ -65,8 +65,8 @@ public class Transactions {
         return () -> currentConnection.get();
     }
 
-    public QueryExecutor getQueryExecutor(Consumer<SQLException> consumer) {
-        return new BasicQueryExecutor(getConnectionAccessor(), consumer);
+    public QueryExecutor getQueryExecutor(String sqlDir, Consumer<SQLException> consumer) {
+        return new BasicQueryExecutorFactory().newInstance(sqlDir, getConnectionAccessor(), consumer);
     }
 
     public Consumer<Runnable> getTransactionRunner() {

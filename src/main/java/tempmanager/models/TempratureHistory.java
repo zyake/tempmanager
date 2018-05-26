@@ -10,11 +10,14 @@ public class TempratureHistory {
 
     private final String date;
 
-    public TempratureHistory(String minTemp, String maxTemp, String avgTemp, String date) {
+    private final int count;
+
+    public TempratureHistory(String minTemp, String maxTemp, String avgTemp, String date, int count) {
         this.minTemp = minTemp;
         this.maxTemp = maxTemp;
         this.avgTemp = avgTemp;
         this.date = date;
+        this.count = count;
     }
 
     public String getMinTemp() {
@@ -31,5 +34,9 @@ public class TempratureHistory {
 
     public String getDate() {
         return date;
+    }
+
+    public int getCount() {
+        return count;
     }
 }
