@@ -10,12 +10,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class BasicQueryExecutorFactory {
 
-    public QueryExecutor newInstance(String rootDir, Supplier<Connection> connectionAccesser, Consumer<SQLException> exceptionHandler) {
+    public static final BiConsumer<String, SQLException> DEFAULT_EXCEPTION_HANDLER = (sql, exp) -> {
+        throw new RuntimeException(String.format("SQL exescution failed!: SQL=%s, SQL state=%s", sql, exp.getSQLState()), exp);
+    };
+
+    public QueryExecutor newInstance(String rootDir, Supplier<Connection> connectionAccesser, BiConsumer<String, SQLException> exceptionHandler) {
         Map<String, String> sqlMap = new HashMap<>();
         File file = new File(rootDir);
         for (File sql : file.listFiles()) {

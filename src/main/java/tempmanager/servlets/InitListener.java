@@ -1,6 +1,7 @@
 package tempmanager.servlets;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import tempmanager.db.BasicQueryExecutorFactory;
 import tempmanager.db.Transactions;
 import tempmanager.models.TempratureRepository;
 import tempmanager.services.TempratureService;
@@ -22,7 +23,7 @@ public class InitListener implements ServletContextListener {
 
         Transactions trns = getBasicTransactions(servletContext);
         String sqlDirPath = servletContext.getRealPath("/WEB-INF/sqls");
-        TempratureRepository tempratureRepository = new TempratureRepository(trns.getQueryExecutor(sqlDirPath, (e) -> { throw new RuntimeException(e); }));
+        TempratureRepository tempratureRepository = new TempratureRepository(trns.getQueryExecutor(sqlDirPath, BasicQueryExecutorFactory.DEFAULT_EXCEPTION_HANDLER));
         TempratureService statusService = new TempratureService(tempratureRepository);
 
         servletContext.addServlet("status", new StatusServlet(trns.getTransactionRunner(), statusService))

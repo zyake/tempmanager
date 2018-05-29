@@ -1,11 +1,18 @@
 # /bin/sh
 
 # for details https://qiita.com/fiftystorm36/items/8fa764b703baa1a47687
+# Modified for CentOS 7
+
+# install depencencies
+sudo yum install git cmake make gcc libusb-devel libfoxv systemd-devel gcc-c++
 
 # install hidapi
 git clone https://github.com/signal11/hidapi
 cd hidapi/linux
-make -f Makefile-manual
+sed 's/libusb-1.0/libusb/g' Makefile-manual > mod-makefile
+make -f mod-makefile
+sudo cp libhidapi-hidraw.so /lib64
+sudo cp hid.o /lib64
 
 cd $HOME
 

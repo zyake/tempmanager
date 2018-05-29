@@ -3,6 +3,7 @@ package tempmanager.db;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -65,7 +66,7 @@ public class Transactions {
         return () -> currentConnection.get();
     }
 
-    public QueryExecutor getQueryExecutor(String sqlDir, Consumer<SQLException> consumer) {
+    public QueryExecutor getQueryExecutor(String sqlDir, BiConsumer<String, SQLException> consumer) {
         return new BasicQueryExecutorFactory().newInstance(sqlDir, getConnectionAccessor(), consumer);
     }
 

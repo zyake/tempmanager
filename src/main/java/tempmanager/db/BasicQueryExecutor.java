@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -18,29 +19,25 @@ public class BasicQueryExecutor implements QueryExecutor {
 
     private final Supplier<Connection> provider;
 
-    private final Consumer<SQLException> sqlExceptionConsumer;
+    private final BiConsumer<String, SQLException> sqlExceptionConsumer;
 
-    public BasicQueryExecutor(Map<String, String> sqlMap, Supplier<Connection> provider, Consumer<SQLException> sqlExceptionConsumer) {
+    public BasicQueryExecutor(Map<String, String> sqlMap, Supplier<Connection> provider, BiConsumer<String, SQLException> sqlExceptionConsumer) {
         this.sqlMap = sqlMap;
         this.provider = provider;
         this.sqlExceptionConsumer = sqlExceptionConsumer;
     }
 
     @Override
-    public Map<String, String> getSqlMap() {
-        return sqlMap;
-    }
-
-    @Override
-    public void execute(String key) {
+    public void execute(QueryKey key) {
         execute(key, NULL_OBJECTS);
     }
 
     @Override
-    public void execute(String key, Object... params) {
+    public void execute(QueryKey key, Object... params) {
         PreparedStatement statement = null;
+        String sqlText = null;
         try {
-            String sqlText = sqlMap.get(key);
+            sqlText = sqlMap.get(key.toString());
             if (sqlText == null) {
                 throw new RuntimeException("SQL not found!: KEY=" + key + ", sql map=" + sqlMap);
             }
@@ -51,20 +48,21 @@ public class BasicQueryExecutor implements QueryExecutor {
             }
             statement.execute();
         } catch (SQLException e) {
-            sqlExceptionConsumer.accept(e);
+            sqlExceptionConsumer.accept(sqlText, e);
         }
     }
 
     @Override
-    public <T> List<T> executeQuery(SQLThrowableConsumer consumer, String key) {
+    public <T> List<T> executeQuery(SQLThrowableConsumer consumer, QueryKey key) {
         return executeQuery(consumer, key, NULL_OBJECTS);
     }
 
     @Override
-    public <T> List<T> executeQuery(SQLThrowableConsumer consumer, String key, Object... params) {
+    public <T> List<T> executeQuery(SQLThrowableConsumer consumer, QueryKey key, Object... params) {
         List<T> results = new ArrayList<>();
+        String sqlText = null;
         try {
-            String sqlText = sqlMap.get(key);
+            sqlText = sqlMap.get(key.toString());
             if (sqlText == null) {
                 throw new RuntimeException("SQL not found!: KEY=" + key  + ", sql map=" + sqlMap);
             }
@@ -78,7 +76,7 @@ public class BasicQueryExecutor implements QueryExecutor {
                 results.add(result);
             }
         } catch (SQLException e) {
-             sqlExceptionConsumer.accept(e);
+             sqlExceptionConsumer.accept(sqlText, e);
         }
         return results;
     }

@@ -35,6 +35,6 @@ public class StatusServlet extends HttpServlet {
             req.setAttribute("todayTotal", status.getHisoties().get(0).getCount());
         });
 
-        req.getRequestDispatcher("/status.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/status.jsp").forward(req, resp);
     }
 }
