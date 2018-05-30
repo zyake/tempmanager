@@ -1,1 +1,0 @@
-SELECT count FROM temprature_total_count

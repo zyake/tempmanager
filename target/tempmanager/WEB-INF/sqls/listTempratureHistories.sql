@@ -1,1 +1,0 @@
-SELECT max, min, avg, timestamp_date, count FROM temprature_summary

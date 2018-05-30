@@ -52,7 +52,9 @@ public class InitListener implements ServletContextListener {
         dataSource.setUsername(properties.getProperty("user"));
         dataSource.setPassword(properties.getProperty("pass"));
         dataSource.setDefaultAutoCommit(false);
-        dataSource.setInitialSize(10);
+        dataSource.setInitialSize(4);
+        dataSource.setValidationQuery("SELECT 1");
+        dataSource.setValidationQueryTimeout(5);
 
         return new Transactions(dataSource);
     }

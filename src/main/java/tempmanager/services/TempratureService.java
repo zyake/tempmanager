@@ -38,6 +38,7 @@ public class TempratureService {
      * @param toolLog
      */
     public void recordTemprature(String toolLog) {
+        LOGGER.info("tool log=" + toolLog);
         try {
             String temp = toolLog.split(" ")[3];
             float temprature = Float.parseFloat(temp);

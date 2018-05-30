@@ -1,1 +1,1 @@
-REFRESH MATERIALIZED VIEW CONCURRENTLY temprature_total_count
+REFRESH MATERIALIZED VIEW temprature_total_count
