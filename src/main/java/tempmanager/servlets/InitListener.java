@@ -2,6 +2,7 @@ package tempmanager.servlets;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import tempmanager.db.BasicQueryExecutorFactory;
+import tempmanager.db.QueryExecutor;
 import tempmanager.db.Transactions;
 import tempmanager.models.TempratureRepository;
 import tempmanager.services.TempratureService;
@@ -23,7 +24,9 @@ public class InitListener implements ServletContextListener {
 
         Transactions trns = getBasicTransactions(servletContext);
         String sqlDirPath = servletContext.getRealPath("/WEB-INF/sqls");
-        TempratureRepository tempratureRepository = new TempratureRepository(trns.getQueryExecutor(sqlDirPath, BasicQueryExecutorFactory.DEFAULT_EXCEPTION_HANDLER));
+        QueryExecutor queryExecutor = trns.getQueryExecutor(sqlDirPath, BasicQueryExecutorFactory.DEFAULT_EXCEPTION_HANDLER);
+
+        TempratureRepository tempratureRepository = new TempratureRepository(queryExecutor);
         TempratureService statusService = new TempratureService(tempratureRepository);
 
         servletContext.addServlet("status", new StatusServlet(trns.getTransactionRunner(), statusService))
@@ -31,6 +34,12 @@ public class InitListener implements ServletContextListener {
 
         servletContext.addServlet("record", new RecordTempratureServlet(trns.getTransactionRunner(), statusService))
                 .addMapping("/record");
+
+        servletContext.addServlet("list_monthly_temp", new ListMonthlyTempDataServlet(trns.getTransactionRunner(), statusService))
+                .addMapping("/list_monthly_temp");
+
+        servletContext.addServlet("list_yearly_temp", new ListYearlyTempDataServlet(trns.getTransactionRunner(), statusService))
+                .addMapping("/list_yearly_temp");
     }
 
     private Transactions getBasicTransactions(ServletContext servletContext) {
@@ -46,6 +55,7 @@ public class InitListener implements ServletContextListener {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(properties.getProperty("class"));
         dataSource.setUrl(properties.getProperty("url"));
@@ -53,6 +63,7 @@ public class InitListener implements ServletContextListener {
         dataSource.setPassword(properties.getProperty("pass"));
         dataSource.setDefaultAutoCommit(false);
         dataSource.setInitialSize(4);
+        dataSource.setConnectionProperties("sslmode=require");
         dataSource.setValidationQuery("SELECT 1");
         dataSource.setValidationQueryTimeout(5);
 

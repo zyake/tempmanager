@@ -80,4 +80,8 @@ public class BasicQueryExecutor implements QueryExecutor {
         }
         return results;
     }
+
+    public Map<String, String> getSqlMap() {
+        return this.sqlMap;
+    }
 }

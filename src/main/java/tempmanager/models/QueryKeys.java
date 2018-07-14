@@ -6,10 +6,9 @@ public enum QueryKeys implements QueryKey {
     getTempratureStatus,
     listTempratureHistories,
     getTimezone,
-    recordTemprature,
     getRecordCount,
-    refreshTempratureSummary,
-    refreshTotalCount;
+    updateTemprature,
+    listTempratureRecords;
 
     @Override
     public String toString() {

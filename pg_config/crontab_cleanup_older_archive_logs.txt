@@ -1,0 +1,1 @@
+* 23 * * * find /var/lib/pgsql/archive_logs/ -type f -mtime +7 -delete

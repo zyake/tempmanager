@@ -2,6 +2,7 @@ package tempmanager.models;
 
 import tempmanager.db.QueryExecutor;
 
+import java.io.OutputStream;
 import java.util.List;
 
 public class TempratureRepository {
@@ -30,21 +31,23 @@ public class TempratureRepository {
         return results.get(0);
     }
 
-    public void recordTemprature(float temp, int locationId) {
-        executor.execute(QueryKeys.recordTemprature, temp, locationId);
-    }
-
     public int getRecordCount() {
         List<Integer> intValues = executor.executeQuery((rs) -> rs.getInt(1), QueryKeys.getRecordCount);
         return intValues.get(0);
     }
 
-    public void refreshTempratureSummary() {
-        executor.execute(QueryKeys.refreshTempratureSummary);
+    public void updateTemprature(float temp, int locationId) {
+        executor.execute(QueryKeys.updateTemprature, temp, locationId);
     }
 
-    public void refreshTempratureTotalCount() {
-        executor.execute(QueryKeys.refreshTotalCount);
+    public List<TempratureStatus> listMonthlyTempData(int year, int month, OutputStream outputStream) {
+        String date = year + "-" + month + "-01";
+        return executor.executeQuery((rs) -> new TempratureStatus(rs.getFloat(1), rs.getString(2)), QueryKeys.listTempratureRecords, date, date);
     }
 
+    public List<TempratureStatus> listYearlyTempData(int year, OutputStream outputStream) {
+        String startDate = year + "-01-01";
+        String endDate = year + "-12-31";
+        return executor.executeQuery((rs) -> new TempratureStatus(rs.getFloat(1), rs.getString(2)), QueryKeys.listTempratureRecords, startDate, endDate);
+    }
 }

@@ -24,26 +24,43 @@
  <dd>${status.temprature} Celsius</dd>
 </dl>
 
-<h2>Histories</h2>
-<table border="1">
-<tr>
- <td>Min</td>
- <td>Max</td>
- <td>Avg</td>
- <td>Date</td>
-</tr>
-<c:forEach items="${histories}" var="history">
-<tr>
-    <td>${history.maxTemp}</td>
-    <td>${history.minTemp}</td>
-    <td>${history.avgTemp}</td>
-    <td>${history.date}</td>
-</tr>
-</c:forEach>
-</table>
+<form action="/tempmanager/list_monthly_temp">
+<h2>Download Monthly Temprature CSV</h2>
+<h3>Year</h3>
+ <select name="year">
+   <option value="2018">2018</option>
+   <option value="2019">2019</option>
+ </select>
+ <h3>Month</h3>
+  <select name="month">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+    <option value="9">9</option>
+    <option value="10">10</option>
+    <option value="11">11</option>
+    <option value="12">12</option>
+  </select>
+  <p>
+  <input type="submit" name="download" value="download"/>
+  </p>
+</form>
 
-<form action="/tempmanager/status">
- <input type="submit" name="submit" value="refresh"/>
+<form action="/tempmanager/list_yearly_temp">
+<h2>Download Yearly Temprature CSV</h2>
+<h3>Year</h3>
+ <select name="year">
+   <option value="2018">2018</option>
+   <option value="2019">2019</option>
+ </select>
+ <p>
+ <input type="submit" name="download" value="download"/>
+ </p>
 </form>
 </body>
 </html>

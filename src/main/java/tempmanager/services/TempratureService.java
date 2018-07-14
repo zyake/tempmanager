@@ -3,6 +3,11 @@ package tempmanager.services;
 import org.apache.log4j.Logger;
 import tempmanager.models.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.Date;
 import java.util.List;
 
 public class TempratureService {
@@ -42,9 +47,7 @@ public class TempratureService {
         try {
             String temp = toolLog.split(" ")[3];
             float temprature = Float.parseFloat(temp);
-            repository.recordTemprature(temprature, MY_HOME_ID);
-            repository.refreshTempratureSummary();
-            repository.refreshTempratureTotalCount();
+            repository.updateTemprature(temprature, MY_HOME_ID);
         } catch (RuntimeException ex) {
             LOGGER.error("failed!: " + toolLog, ex);
             throw ex;
@@ -53,5 +56,39 @@ public class TempratureService {
 
     public int getRecordTotal() {
         return repository.getRecordCount();
+    }
+
+    public void listMonthlyTempData(int year, int month, OutputStream outputStream) {
+        List<TempratureStatus> statuses = repository.listMonthlyTempData(year, month, outputStream);
+        try {
+            try (Writer writer = new OutputStreamWriter(outputStream)) {
+                writer.write("timestamp,temprature\r\n");
+                for (TempratureStatus status : statuses) {
+                    writer.write( "\"" + status.getRecordedTimestamp() + "\"");
+                    writer.write(",");
+                    writer.write(Float.toString(status.getTemprature()));
+                    writer.write("\r\n");
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void listYearlyTempData(int year, OutputStream outputStream) {
+        List<TempratureStatus> statuses = repository.listYearlyTempData(year, outputStream);
+        try {
+            try (Writer writer = new OutputStreamWriter(outputStream)) {
+                writer.write("timestamp,temprature\r\n");
+                for (TempratureStatus status : statuses) {
+                    writer.write( "\"" + status.getRecordedTimestamp() + "\"");
+                    writer.write(",");
+                    writer.write(Float.toString(status.getTemprature()));
+                    writer.write("\r\n");
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
