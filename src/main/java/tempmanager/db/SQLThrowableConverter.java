@@ -4,6 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @FunctionalInterface
-public interface SQLThrowableConsumer<T> {
-    void accept(T rs) throws SQLException;
+public interface SQLThrowableConverter<T> {
+    Object consume(T rs) throws SQLException;
 }

@@ -1,16 +1,11 @@
 package tempmanager.models;
 
 import tempmanager.db.QueryExecutor;
-import tempmanager.db.QueryKey;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 public class TempratureRepository {
@@ -50,43 +45,37 @@ public class TempratureRepository {
 
     public void listMonthlyTempData(int year, int month, OutputStream outputStream) {
         String date = year + "-" + month + "-01";
-        Connection connection = executor.getConnection();
-        try (Writer writer = new OutputStreamWriter(outputStream)) {
-            writer.write("timestamp,temprature\r\n");
-            PreparedStatement statement  = connection.prepareStatement(executor.getSqlMap().get(QueryKeys.listTempratureRecords.toString()));
-            statement.setObject(1, date);
-            statement.setObject(2, date);
-            statement.setFetchSize(10);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                writer.write( "\"" + resultSet.getObject(1) + "\"");
-                writer.write(",");
-                writer.write(Float.toString(resultSet.getFloat(2)));
-                writer.write("\r\n");
-            }
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e);
-        }
+        listTempDataInternal(outputStream, date, date);
     }
 
     public void listYearlyTempData(int year, OutputStream outputStream) {
         String startDate = year + "-01-01";
         String endDate = year + "-12-31";
-        Connection connection = executor.getConnection();
+        listTempDataInternal(outputStream, startDate, endDate);
+    }
+
+    public void maintenanceIndexes() {
+        executor.execute(QueryKeys.maintenanceIndexes);
+    }
+
+    protected void listTempDataInternal(OutputStream outputStream, String date, String date2) {
         try (Writer writer = new OutputStreamWriter(outputStream)) {
             writer.write("timestamp,temprature\r\n");
-            PreparedStatement statement  = connection.prepareStatement(executor.getSqlMap().get(QueryKeys.listTempratureRecords.toString()));
-            statement.setObject(1, startDate);
-            statement.setObject(2, endDate);
-            statement.setFetchSize(10);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                writer.write( "\"" + resultSet.getObject(1) + "\"");
-                writer.write(",");
-                writer.write(Float.toString(resultSet.getFloat(2)));
-                writer.write("\r\n");
-            }
-        } catch (IOException | SQLException e) {
+            executor.setThreadLocalStatementModifier((ps) -> {
+                ps.setFetchSize(10);
+            });
+            executor.executeAsStream((rs) -> {
+                        try {
+                            writer.write("\"" + rs.getObject(1) + "\"");
+                            writer.write(",");
+                            writer.write(Float.toString(rs.getFloat(2)));
+                            writer.write("\r\n");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    },
+                    QueryKeys.listTempratureRecords, date, date2);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

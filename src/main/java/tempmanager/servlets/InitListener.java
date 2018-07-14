@@ -4,6 +4,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import tempmanager.db.BasicQueryExecutorFactory;
 import tempmanager.db.QueryExecutor;
 import tempmanager.db.Transactions;
+import tempmanager.jobs.IndexMaintenanceJob;
 import tempmanager.models.TempratureRepository;
 import tempmanager.services.TempratureService;
 
@@ -14,9 +15,12 @@ import javax.servlet.annotation.WebListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Timer;
 
 @WebListener
 public class InitListener implements ServletContextListener {
+
+    private final Timer timer = new Timer();
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -40,6 +44,8 @@ public class InitListener implements ServletContextListener {
 
         servletContext.addServlet("list_yearly_temp", new ListYearlyTempDataServlet(trns.getTransactionRunner(), statusService))
                 .addMapping("/list_yearly_temp");
+
+        timer.schedule(new IndexMaintenanceJob(tempratureRepository, trns.getTransactionRunner()), 60 * 1000);
     }
 
     private Transactions getBasicTransactions(ServletContext servletContext) {

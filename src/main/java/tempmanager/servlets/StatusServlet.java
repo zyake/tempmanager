@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class StatusServlet extends HttpServlet {
+public class StatusServlet extends ExtraHttpServlet {
 
     private final Consumer<Runnable> trns;
 
@@ -23,7 +23,7 @@ public class StatusServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setHeader("Cache-Control", "no-cache");
+        getHeaderOutputter().writeNoCache(resp);
         trns.accept(() -> {
             StatusResult status = statusService.TempratureStatus();
             req.setAttribute("timezone", status.GetTimezone());

@@ -21,6 +21,8 @@ public class BasicQueryExecutor implements QueryExecutor {
 
     private final BiConsumer<String, SQLException> sqlExceptionConsumer;
 
+    private final ThreadLocal<SQLThrowableConsumer<PreparedStatement>> threadLocalStatementModifier = new InheritableThreadLocal<>();
+
     public BasicQueryExecutor(Map<String, String> sqlMap, Supplier<Connection> provider, BiConsumer<String, SQLException> sqlExceptionConsumer) {
         this.sqlMap = sqlMap;
         this.provider = provider;
@@ -43,6 +45,11 @@ public class BasicQueryExecutor implements QueryExecutor {
             }
 
             statement = provider.get().prepareStatement(sqlText);
+            SQLThrowableConsumer<PreparedStatement> modifier = threadLocalStatementModifier.get();
+            if (modifier == null) {
+                modifier.accept(statement);
+            }
+
             for (int i = 1; i <= params.length ; i ++) {
                 statement.setObject(i, params[i - 1]);
             }
@@ -53,12 +60,12 @@ public class BasicQueryExecutor implements QueryExecutor {
     }
 
     @Override
-    public <T> List<T> executeQuery(SQLThrowableConsumer consumer, QueryKey key) {
+    public <T> List<T> executeQuery(SQLThrowableConverter<ResultSet> consumer, QueryKey key) {
         return executeQuery(consumer, key, NULL_OBJECTS);
     }
 
     @Override
-    public <T> List<T> executeQuery(SQLThrowableConsumer consumer, QueryKey key, Object... params) {
+    public <T> List<T> executeQuery(SQLThrowableConverter<ResultSet> consumer, QueryKey key, Object... params) {
         List<T> results = new ArrayList<>();
         String sqlText = null;
         try {
@@ -67,6 +74,10 @@ public class BasicQueryExecutor implements QueryExecutor {
                 throw new RuntimeException("SQL not found!: KEY=" + key  + ", sql map=" + sqlMap);
             }
             PreparedStatement statement = provider.get().prepareStatement(sqlText);
+            SQLThrowableConsumer<PreparedStatement> modifier = threadLocalStatementModifier.get();
+            if (modifier != null) {
+                modifier.accept(statement);
+            }
             for (int i = 1; i <= params.length ; i ++) {
                 statement.setObject(i, params[i - 1]);
             }
@@ -81,12 +92,42 @@ public class BasicQueryExecutor implements QueryExecutor {
         return results;
     }
 
-    public Map<String, String> getSqlMap() {
-        return this.sqlMap;
+    @Override
+    public void executeAsStream(SQLThrowableConsumer<ResultSet> consumer, QueryKey key) {
+        executeAsStream(consumer, key, NULL_OBJECTS);
     }
 
     @Override
-    public Connection getConnection() {
-        return provider.get();
+    public void executeAsStream(SQLThrowableConsumer<ResultSet> consumer, QueryKey key, Object... params) {
+        String sqlText = null;
+        try {
+            sqlText = sqlMap.get(key.toString());
+            if (sqlText == null) {
+                throw new RuntimeException("SQL not found!: KEY=" + key  + ", sql map=" + sqlMap);
+            }
+            PreparedStatement statement = provider.get().prepareStatement(sqlText);
+            SQLThrowableConsumer<PreparedStatement> modifier = threadLocalStatementModifier.get();
+            if (modifier != null) {
+                modifier.accept(statement);
+            }
+            for (int i = 1; i <= params.length ; i ++) {
+                statement.setObject(i, params[i - 1]);
+            }
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                consumer.accept(resultSet);
+            }
+        } catch (SQLException e) {
+            sqlExceptionConsumer.accept(sqlText, e);
+        }
+    }
+
+    @Override
+    public void setThreadLocalStatementModifier(SQLThrowableConsumer<PreparedStatement> statement) {
+        threadLocalStatementModifier.set(statement);
+    }
+
+    public Map<String, String> getSqlMap() {
+        return this.sqlMap;
     }
 }

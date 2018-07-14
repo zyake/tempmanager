@@ -8,7 +8,8 @@ public enum QueryKeys implements QueryKey {
     getTimezone,
     getRecordCount,
     updateTemprature,
-    listTempratureRecords;
+    listTempratureRecords,
+    maintenanceIndexes;
 
     @Override
     public String toString() {

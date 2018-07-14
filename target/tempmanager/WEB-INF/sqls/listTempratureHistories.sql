@@ -1,0 +1,1 @@
+SELECT max, min, avg, timestamp_date, count FROM adjusted_temprature_summary
