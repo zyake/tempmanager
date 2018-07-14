@@ -59,36 +59,10 @@ public class TempratureService {
     }
 
     public void listMonthlyTempData(int year, int month, OutputStream outputStream) {
-        List<TempratureStatus> statuses = repository.listMonthlyTempData(year, month, outputStream);
-        try {
-            try (Writer writer = new OutputStreamWriter(outputStream)) {
-                writer.write("timestamp,temprature\r\n");
-                for (TempratureStatus status : statuses) {
-                    writer.write( "\"" + status.getRecordedTimestamp() + "\"");
-                    writer.write(",");
-                    writer.write(Float.toString(status.getTemprature()));
-                    writer.write("\r\n");
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+      repository.listMonthlyTempData(year, month, outputStream);
     }
 
     public void listYearlyTempData(int year, OutputStream outputStream) {
-        List<TempratureStatus> statuses = repository.listYearlyTempData(year, outputStream);
-        try {
-            try (Writer writer = new OutputStreamWriter(outputStream)) {
-                writer.write("timestamp,temprature\r\n");
-                for (TempratureStatus status : statuses) {
-                    writer.write( "\"" + status.getRecordedTimestamp() + "\"");
-                    writer.write(",");
-                    writer.write(Float.toString(status.getTemprature()));
-                    writer.write("\r\n");
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        repository.listYearlyTempData(year, outputStream);
     }
 }

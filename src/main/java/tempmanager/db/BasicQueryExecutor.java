@@ -84,4 +84,9 @@ public class BasicQueryExecutor implements QueryExecutor {
     public Map<String, String> getSqlMap() {
         return this.sqlMap;
     }
+
+    @Override
+    public Connection getConnection() {
+        return provider.get();
+    }
 }

@@ -1,5 +1,6 @@
 package tempmanager.db;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
@@ -14,4 +15,6 @@ public interface QueryExecutor {
     <T> List<T> executeQuery(SQLThrowableConsumer consumer, QueryKey key, Object... params);
 
     Map<String, String> getSqlMap();
+
+    Connection getConnection();
 }
