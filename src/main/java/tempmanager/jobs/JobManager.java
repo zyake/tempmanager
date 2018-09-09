@@ -15,8 +15,9 @@ public class JobManager implements AutoCloseable {
         this.delayInterval = delayInterval;
     }
 
-    public JobManager scheduleJob(AbstractTimerJob job) {
+    public JobManager put(AbstractTimerJob job) {
         service.scheduleAtFixedRate(job, delayInterval, delayInterval, TimeUnit.MINUTES);
+        return this;
     }
 
     @Override
