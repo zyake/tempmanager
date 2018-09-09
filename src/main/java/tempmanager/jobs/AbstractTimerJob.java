@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
-public abstract class AbstractTimerJob extends TimerTask {
+public abstract class AbstractTimerJob implements Runnable {
 
     private final Logger LOGGER = Logger.getLogger(AbstractTimerJob.class);
 
@@ -19,7 +19,11 @@ public abstract class AbstractTimerJob extends TimerTask {
     public void run() {
         LOGGER.info("Start job...: " + getClass().getCanonicalName());
         trn.accept(() -> {
-            runInternal();
+            try {
+                runInternal();
+            } catch(Exception ex) {
+                LOGGER.warn("execution failed!", ex);
+            }
         });
         LOGGER.info("End job...: " + getClass().getCanonicalName());
     }

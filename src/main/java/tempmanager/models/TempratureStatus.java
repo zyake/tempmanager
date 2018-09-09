@@ -2,20 +2,27 @@ package tempmanager.models;
 
 public class TempratureStatus {
 
-    private final float temprature;
+    private final String temprature;
 
     private final String recordedTimestamp;
 
-    public TempratureStatus(float temprature, String recordedTimestamp) {
-        this.temprature = temprature;
+    private final int tempLimit;
+
+    public TempratureStatus(float temprature, String recordedTimestamp, int tempLimit) {
+        this.temprature = Integer.toString(Math.round(temprature));
         this.recordedTimestamp = recordedTimestamp;
+        this.tempLimit = tempLimit;
     }
 
-    public float getTemprature() {
+    public String getTemprature() {
         return temprature;
     }
 
     public String getRecordedTimestamp() {
         return recordedTimestamp;
+    }
+
+    public int getTempLimit() {
+        return tempLimit;
     }
 }

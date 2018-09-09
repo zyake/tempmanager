@@ -26,11 +26,10 @@ public class TempratureService {
         try {
             String timeZone = repository.getTimeZone();
             TempratureStatus tempratureStatus = repository.getTempratureStatus();
-            List<TempratureHistory> tempratureHistories = repository.listTempratureHitories();
+            List<TempratureHistory> tempWeekly = repository.listTempratureWeeklySummary();
+            List<TempratureHistory> tempMonthly = repository.listTempratureMonthlySummary();
 
-            LOGGER.debug("request completed: " + tempratureStatus.getTemprature() + ", " + tempratureStatus.getRecordedTimestamp());
-
-            return new StatusResult(timeZone, tempratureHistories, tempratureStatus);
+            return new StatusResult(timeZone, tempWeekly, tempMonthly, tempratureStatus);
         } catch (RuntimeException ex) {
             LOGGER.error("execution failed.", ex);
             throw ex;
@@ -58,11 +57,19 @@ public class TempratureService {
         return repository.getRecordCount();
     }
 
-    public void listMonthlyTempData(int year, int month, OutputStream outputStream) {
-      repository.listMonthlyTempData(year, month, outputStream);
+    public void listMonthlyTempData(int year, int month, Writer writer) {
+      repository.listMonthlyTempData(year, month, writer);
     }
 
-    public void listYearlyTempData(int year, OutputStream outputStream) {
-        repository.listYearlyTempData(year, outputStream);
+    public List<TempratureStatus> listMonthlyTempDataSlow(int year, int month) {
+        return repository.listMonthlyTempDataSlow(year, month);
+    }
+
+    public void listYearlyTempData(int year, Writer writer) {
+        repository.listYearlyTempData(year, writer);
+    }
+
+    public void insertLogStatus(String userAgent, String uri) {
+        repository.insertLogStatus(userAgent, uri);
     }
 }

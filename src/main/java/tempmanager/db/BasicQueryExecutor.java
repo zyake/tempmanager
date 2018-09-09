@@ -1,5 +1,7 @@
 package tempmanager.db;
 
+import org.apache.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,10 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class BasicQueryExecutor implements QueryExecutor {
+
+    private static final Logger LOGGER = Logger.getLogger(BasicQueryExecutor.class);
 
     private static final Object[] NULL_OBJECTS = new Object[] {};
 
@@ -46,7 +49,7 @@ public class BasicQueryExecutor implements QueryExecutor {
 
             statement = provider.get().prepareStatement(sqlText);
             SQLThrowableConsumer<PreparedStatement> modifier = threadLocalStatementModifier.get();
-            if (modifier == null) {
+            if (modifier != null) {
                 modifier.accept(statement);
             }
 
@@ -130,4 +133,16 @@ public class BasicQueryExecutor implements QueryExecutor {
     public Map<String, String> getSqlMap() {
         return this.sqlMap;
     }
+
+    @Override
+    public void invoke(SQLThrowableConsumer<Connection> connectionConsumer) {
+        Connection connection = provider.get();
+        try {
+            connectionConsumer.accept(connection);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 }

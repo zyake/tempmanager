@@ -16,7 +16,9 @@ VALUES(
     temprature,
     loc_id
 );
-REFRESH MATERIALIZED VIEW temprature_summary;
+REFRESH MATERIALIZED VIEW temprature_daily_summary;
+REFRESH MATERIALIZED VIEW temprature_weekly_summary;
+REFRESH MATERIALIZED VIEW temprature_monthly_summary;
 REFRESH MATERIALIZED VIEW temprature_total_count;
 RETURN 1;
 END;

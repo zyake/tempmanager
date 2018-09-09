@@ -28,7 +28,7 @@ public class ListYearlyTempDataServlet extends ExtraHttpServlet {
         trn.accept(() -> {
             getHeaderOutputter().writeCsvDownloadHeader(resp, year + ".csv");
             try {
-                temPService.listYearlyTempData(year, resp.getOutputStream());
+                temPService.listYearlyTempData(year, resp.getWriter());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

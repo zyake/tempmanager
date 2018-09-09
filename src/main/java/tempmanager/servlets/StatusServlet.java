@@ -25,14 +25,16 @@ public class StatusServlet extends ExtraHttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         getHeaderOutputter().writeNoCache(resp);
         trns.accept(() -> {
+            statusService.insertLogStatus(req.getHeader("User-Agent"), req.getRequestURI());
+
             StatusResult status = statusService.TempratureStatus();
             req.setAttribute("timezone", status.GetTimezone());
             req.setAttribute("status", status.getStatus());
-            req.setAttribute("histories", status.getHisoties());
+            req.setAttribute("weekly", status.getTempWeekly());
+            req.setAttribute("monthly", status.getTempMonthly());
 
             int recordTotal = statusService.getRecordTotal();
             req.setAttribute("recordTotal", recordTotal);
-            req.setAttribute("todayTotal", status.getHisoties().get(0).getCount());
         });
 
         req.getRequestDispatcher("status.jsp").forward(req, resp);

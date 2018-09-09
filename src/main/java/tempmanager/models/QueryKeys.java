@@ -9,7 +9,12 @@ public enum QueryKeys implements QueryKey {
     getRecordCount,
     updateTemprature,
     listTempratureRecords,
-    maintenanceIndexes;
+    maintenanceIndexes,
+    listTempratureWeeklySummary,
+    listTempratureMonthlySummary,
+    insertLogStatus,
+    getPassword
+    ;
 
     @Override
     public String toString() {

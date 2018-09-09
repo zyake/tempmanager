@@ -6,13 +6,16 @@ public class StatusResult {
 
     private final String timezone;
 
-    private final List<TempratureHistory> histories;
+    private final List<TempratureHistory> tempWeekly;
+
+    private final List<TempratureHistory> tempMonthly;
 
     private final TempratureStatus status;
 
-    public StatusResult(String timezone, List<TempratureHistory> histories, TempratureStatus status) {
+    public StatusResult(String timezone, List<TempratureHistory> tempWeekly, List<TempratureHistory> tempMonthly, TempratureStatus status) {
         this.timezone = timezone;
-        this.histories = histories;
+        this.tempWeekly = tempWeekly;
+        this.tempMonthly = tempMonthly;
         this.status = status;
     }
 
@@ -20,8 +23,12 @@ public class StatusResult {
         return timezone;
     }
 
-    public List<TempratureHistory> getHisoties() {
-        return histories;
+    public List<TempratureHistory> getTempWeekly() {
+        return tempWeekly;
+    }
+
+    public List<TempratureHistory> getTempMonthly() {
+        return tempMonthly;
     }
 
     public TempratureStatus getStatus() {

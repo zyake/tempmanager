@@ -1,1 +1,0 @@
-SELECT update_temprature(?, ?);
