@@ -74,9 +74,6 @@ public class TempratureRepository {
     protected void listTempDataInternal(Writer writer, String date, String date2) {
         try {
             writer.write("timestamp,temprature\r\n");
-            executor.executeAsStream((rs) -> {
-
-            },QueryKeys.listTempratureRecords, date, date2);
             executor.invoke((conn) -> {
                 conn.setAutoCommit(false);
                 PreparedStatement statement = conn.prepareStatement("SELECT recorded_timestamp, temprature + (SELECT adjust FROM  temprature_adjust WHERE id = 1) FROM temprature_records WHERE timestamp_date >= ?::date AND timestamp_date <= ?::date");

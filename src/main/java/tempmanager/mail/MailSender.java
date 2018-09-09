@@ -24,6 +24,7 @@ public class MailSender {
             msg.setSentDate(new Date());
             msg.setText(text);
             msg.setHeader("XPriority", "1");
+
             Transport.send(msg);
         } catch (MessagingException mex) {
             throw new RuntimeException(mex);
