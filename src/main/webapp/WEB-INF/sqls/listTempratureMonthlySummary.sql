@@ -1,1 +1,1 @@
-SELECT min, max, avg, year || '-' || month as date, sum FROM temprature_monthly_summary ORDER BY year, month DESC
+SELECT max, min, avg, year || '-' || month as date, sum FROM adjusted_temprature_monthly_summary ORDER BY year, month DESC

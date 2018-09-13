@@ -12,7 +12,7 @@ public class TempratureHistory {
 
     private final int count;
 
-    public TempratureHistory(String minTemp, String maxTemp, String avgTemp, String date, int count) {
+    public TempratureHistory(String maxTemp, String minTemp, String avgTemp, String date, int count) {
         this.minTemp = minTemp;
         this.maxTemp = maxTemp;
         this.avgTemp = avgTemp;

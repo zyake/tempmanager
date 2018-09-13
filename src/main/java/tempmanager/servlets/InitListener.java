@@ -40,7 +40,7 @@ public class InitListener implements ServletContextListener {
                 .add("/list_yearly_temp", new ListYearlyTempDataServlet(trns.getTransactionRunner(), statusService))
                 .add("/list_monthly_temp_slow", new SlowListMonthlyTempDataServlet(trns.getTransactionRunner(), statusService));
 
-        Properties serverConfig = ServletFIleAccessor.readProperties(servletContext,"/WEB-INF/classes/mail.properties");
+        Properties serverConfig = new ServletFIleAccessor().readProperties(servletContext,"/WEB-INF/classes/mail.properties");
         jobManager
             .put(new IndexMaintenanceJob(tempratureRepository, trns.getTransactionRunner()))
             .put(new TempratureLimitCheckJob(trns.getTransactionRunner(), tempratureRepository, serverConfig));

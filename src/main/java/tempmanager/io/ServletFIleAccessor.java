@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class ServletFIleAccessor {
 
-    public static Properties readProperties(ServletContext context, String contextPath) {
+    public Properties readProperties(ServletContext context, String contextPath) {
         InputStream stream = context.getResourceAsStream(contextPath);
         Properties properties = new Properties();
         try {

@@ -1,1 +1,1 @@
-SELECT max, min, avg, timestamp_date, count FROM temprature_weekly_summary
+SELECT max, min, avg, timestamp_date, count FROM adjusted_temprature_weekly_summary
