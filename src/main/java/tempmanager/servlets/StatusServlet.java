@@ -4,7 +4,6 @@ import tempmanager.models.StatusResult;
 import tempmanager.services.TempratureService;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,7 +26,7 @@ public class StatusServlet extends ExtraHttpServlet {
         trns.accept(() -> {
             statusService.insertLogStatus(req.getHeader("User-Agent"), req.getRequestURI());
 
-            StatusResult status = statusService.TempratureStatus();
+            StatusResult status = statusService.getTempratureStatus();
             req.setAttribute("timezone", status.GetTimezone());
             req.setAttribute("status", status.getStatus());
             req.setAttribute("weekly", status.getTempWeekly());

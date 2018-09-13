@@ -22,7 +22,7 @@ public class TempratureService {
         this.repository = repository;
     }
 
-    public StatusResult TempratureStatus() {
+    public StatusResult getTempratureStatus() {
         try {
             String timeZone = repository.getTimeZone();
             TempratureStatus tempratureStatus = repository.getTempratureStatus();

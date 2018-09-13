@@ -34,7 +34,7 @@ public class BasicQueryExecutorFactory {
                 FileInputStream inputStream = new FileInputStream(sql);
                 byte[] dataBytes = new byte[(int) sql.length()];
                 inputStream.read(dataBytes);
-                String sqlText = new String(dataBytes);
+                String sqlText = new String(dataBytes, "UTF-8");
                 String sqlCommand = sql.getName().substring(0, sql.getName().length() - 4);
                 sqlMap.put(sqlCommand, sqlText);
             } catch (FileNotFoundException e) {
