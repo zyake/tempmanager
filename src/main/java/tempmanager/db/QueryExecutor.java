@@ -24,6 +24,4 @@ public interface QueryExecutor {
     void setThreadLocalStatementModifier(SQLThrowableConsumer<PreparedStatement> statement);
 
     Map<String, String> getSqlMap();
-
-    void invoke(SQLThrowableConsumer<Connection> connectionConsumer);
 }

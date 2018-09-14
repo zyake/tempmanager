@@ -57,16 +57,8 @@ public class TempratureService {
         return repository.getRecordCount();
     }
 
-    public void listMonthlyTempData(int year, int month, Writer writer) {
-      repository.listMonthlyTempData(year, month, writer);
-    }
-
     public List<TempratureStatus> listMonthlyTempDataSlow(int year, int month) {
         return repository.listMonthlyTempDataSlow(year, month);
-    }
-
-    public void listYearlyTempData(int year, Writer writer) {
-        repository.listYearlyTempData(year, writer);
     }
 
     public void insertLogStatus(String userAgent, String uri) {

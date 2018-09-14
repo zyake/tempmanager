@@ -55,46 +55,8 @@ public class TempratureRepository {
         executor.execute(QueryKeys.updateTemprature, temp, locationId);
     }
 
-    public void listMonthlyTempData(int year, int month, Writer writer) {
-        String date1 = year + "-" + month + "-01";
-        String date2 = year + "-" + month + "-30";
-        listTempDataInternal(writer, date1, date2);
-    }
-
-    public void listYearlyTempData(int year, Writer writer) {
-        String startDate = year + "-01-01";
-        String endDate = year + "-12-31";
-        listTempDataInternal(writer, startDate, endDate);
-    }
-
     public void maintenanceIndexes() {
         executor.execute(QueryKeys.maintenanceIndexes);
-    }
-
-    protected void listTempDataInternal(Writer writer, String date, String date2) {
-        try {
-            writer.write("timestamp,temprature\r\n");
-            executor.invoke((conn) -> {
-                conn.setAutoCommit(false);
-                PreparedStatement statement = conn.prepareStatement("SELECT recorded_timestamp, temprature + (SELECT adjust FROM  temprature_adjust WHERE id = 1) FROM temprature_records WHERE timestamp_date >= ?::date AND timestamp_date <= ?::date");
-                statement.setObject(1, date);
-                statement.setObject(2, date2);
-
-                ResultSet rs = statement.executeQuery();
-                while (rs.next()) {
-                    try {
-                        writer.write(rs.getObject(1).toString());
-                        writer.write(",");
-                        writer.write(Integer.toString(Math.round(rs.getFloat(2))));
-                        writer.write("\r\n");
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void insertLogStatus(String userAgent, String uri) {

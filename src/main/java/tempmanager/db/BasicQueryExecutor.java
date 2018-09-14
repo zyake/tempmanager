@@ -79,10 +79,11 @@ public class BasicQueryExecutor implements QueryExecutor {
             for (int i = 1; i <= params.length ; i ++) {
                 statement.setObject(i, params[i - 1]);
             }
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                T result = (T) consumer.consume(resultSet);
-                results.add(result);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    T result = (T) consumer.consume(resultSet);
+                    results.add(result);
+                }
             }
         } catch (SQLException e) {
              sqlExceptionConsumer.accept(sqlText, e);
@@ -110,9 +111,10 @@ public class BasicQueryExecutor implements QueryExecutor {
             for (int i = 1; i <= params.length ; i ++) {
                 statement.setObject(i, params[i - 1]);
             }
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                consumer.accept(resultSet);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    consumer.accept(resultSet);
+                }
             }
         } catch (SQLException e) {
             sqlExceptionConsumer.accept(sqlText, e);
@@ -127,16 +129,4 @@ public class BasicQueryExecutor implements QueryExecutor {
     public Map<String, String> getSqlMap() {
         return this.sqlMap;
     }
-
-    @Override
-    public void invoke(SQLThrowableConsumer<Connection> connectionConsumer) {
-        Connection connection = provider.get();
-        try {
-            connectionConsumer.accept(connection);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
 }

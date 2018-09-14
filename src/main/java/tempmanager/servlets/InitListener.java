@@ -36,8 +36,6 @@ public class InitListener implements ServletContextListener {
         new ServletContextFactory(servletContext)
                 .add("/status", new StatusServlet(trns.getTransactionRunner(), statusService))
                 .add("/record", new RecordTempratureServlet(trns.getTransactionRunner(), statusService))
-                .add("/list_monthly_temp", new ListMonthlyTempDataServlet(trns.getTransactionRunner(), statusService))
-                .add("/list_yearly_temp", new ListYearlyTempDataServlet(trns.getTransactionRunner(), statusService))
                 .add("/list_monthly_temp_slow", new SlowListMonthlyTempDataServlet(trns.getTransactionRunner(), statusService));
 
         Properties serverConfig = new ServletFIleAccessor().readProperties(servletContext,"/WEB-INF/classes/mail.properties");
