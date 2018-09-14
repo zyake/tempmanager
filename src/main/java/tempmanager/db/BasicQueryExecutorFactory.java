@@ -22,24 +22,27 @@ public class BasicQueryExecutorFactory {
     public QueryExecutor newInstance(String rootDir, Supplier<Connection> connectionAccesser, BiConsumer<String, SQLException> exceptionHandler) {
         Map<String, String> sqlMap = new HashMap<>();
         File file = new File(rootDir);
-        for (File sql : file.listFiles()) {
-            if (sql.isDirectory()) {
-                continue;
-            }
-            if (!sql.getName().endsWith(".sql")) {
-                continue;
-            }
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File sql : files) {
+                if (sql.isDirectory()) {
+                    continue;
+                }
+                if (!sql.getName().endsWith(".sql")) {
+                    continue;
+                }
 
-            try(FileInputStream inputStream = new FileInputStream(sql)) {
-                byte[] dataBytes = new byte[(int) sql.length()];
-                inputStream.read(dataBytes);
-                String sqlText = new String(dataBytes, "UTF-8");
-                String sqlCommand = sql.getName().substring(0, sql.getName().length() - 4);
-                sqlMap.put(sqlCommand, sqlText);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                try (FileInputStream inputStream = new FileInputStream(sql)) {
+                    byte[] dataBytes = new byte[(int) sql.length()];
+                    inputStream.read(dataBytes);
+                    String sqlText = new String(dataBytes, "UTF-8");
+                    String sqlCommand = sql.getName().substring(0, sql.getName().length() - 4);
+                    sqlMap.put(sqlCommand, sqlText);
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 

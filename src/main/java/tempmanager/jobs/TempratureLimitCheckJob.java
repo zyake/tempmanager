@@ -34,7 +34,7 @@ public class TempratureLimitCheckJob extends AbstractTimerJob {
 
             String password = repository.getPassword(DECRYPT_KEY);
             MailSender mailSender = new MailSender();
-            String msg = String.format("Temprature warning! \r\n current temprature: %s\r\n temprature limit: %d", status.getTemprature(), status.getTempLimit());
+            String msg = String.format("Temprature warning! n current temprature: %s%n temprature limit: %d", status.getTemprature(), status.getTempLimit());
             mailSender.sendEmail(serverConfig, "zyake.mk4@gmail.com","zyake.mk4@gmail.com", password, "Temprature Warning", msg);
         }
         LOGGER.info("End checking.");
