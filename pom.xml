@@ -69,7 +69,6 @@
       <artifactId>javax.json</artifactId>
       <version>1.0.1</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.tomcat.maven/tomcat8-maven-plugin -->
   </dependencies>
 
   <build>

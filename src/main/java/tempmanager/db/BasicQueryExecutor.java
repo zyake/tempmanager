@@ -39,20 +39,16 @@ public class BasicQueryExecutor implements QueryExecutor {
 
     @Override
     public void execute(QueryKey key, Object... params) {
-        PreparedStatement statement = null;
-        String sqlText = null;
-        try {
-            sqlText = sqlMap.get(key.toString());
-            if (sqlText == null) {
-                throw new RuntimeException("SQL not found!: KEY=" + key + ", sql map=" + sqlMap);
-            }
+        String sqlText = sqlMap.get(key.toString());
+        if (sqlText == null) {
+            throw new RuntimeException("SQL not found!: KEY=" + key + ", sql map=" + sqlMap);
+        }
 
-            statement = provider.get().prepareStatement(sqlText);
+        try(PreparedStatement statement = provider.get().prepareStatement(sqlText)) {
             SQLThrowableConsumer<PreparedStatement> modifier = threadLocalStatementModifier.get();
             if (modifier != null) {
                 modifier.accept(statement);
             }
-
             for (int i = 1; i <= params.length ; i ++) {
                 statement.setObject(i, params[i - 1]);
             }
@@ -70,13 +66,12 @@ public class BasicQueryExecutor implements QueryExecutor {
     @Override
     public <T> List<T> executeQuery(SQLThrowableConverter<ResultSet> consumer, QueryKey key, Object... params) {
         List<T> results = new ArrayList<>();
-        String sqlText = null;
-        try {
-            sqlText = sqlMap.get(key.toString());
-            if (sqlText == null) {
-                throw new RuntimeException("SQL not found!: KEY=" + key  + ", sql map=" + sqlMap);
-            }
-            PreparedStatement statement = provider.get().prepareStatement(sqlText);
+        String sqlText = sqlMap.get(key.toString());
+        if (sqlText == null) {
+            throw new RuntimeException("SQL not found!: KEY=" + key  + ", sql map=" + sqlMap);
+        }
+
+        try(PreparedStatement statement = provider.get().prepareStatement(sqlText)) {
             SQLThrowableConsumer<PreparedStatement> modifier = threadLocalStatementModifier.get();
             if (modifier != null) {
                 modifier.accept(statement);
@@ -102,13 +97,12 @@ public class BasicQueryExecutor implements QueryExecutor {
 
     @Override
     public void executeAsStream(SQLThrowableConsumer<ResultSet> consumer, QueryKey key, Object... params) {
-        String sqlText = null;
-        try {
-            sqlText = sqlMap.get(key.toString());
-            if (sqlText == null) {
-                throw new RuntimeException("SQL not found!: KEY=" + key  + ", sql map=" + sqlMap);
-            }
-            PreparedStatement statement = provider.get().prepareStatement(sqlText);
+        String sqlText = sqlMap.get(key.toString());
+        if (sqlText == null) {
+            throw new RuntimeException("SQL not found!: KEY=" + key  + ", sql map=" + sqlMap);
+        }
+
+        try (PreparedStatement statement = provider.get().prepareStatement(sqlText)){
             SQLThrowableConsumer<PreparedStatement> modifier = threadLocalStatementModifier.get();
             if (modifier != null) {
                 modifier.accept(statement);
