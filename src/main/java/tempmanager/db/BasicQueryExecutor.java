@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-@SuppressWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
 public class BasicQueryExecutor implements QueryExecutor {
 
     private static final Logger LOGGER = Logger.getLogger(BasicQueryExecutor.class);

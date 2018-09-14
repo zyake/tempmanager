@@ -30,8 +30,7 @@ public class BasicQueryExecutorFactory {
                 continue;
             }
 
-            try {
-                FileInputStream inputStream = new FileInputStream(sql);
+            try(FileInputStream inputStream = new FileInputStream(sql)) {
                 byte[] dataBytes = new byte[(int) sql.length()];
                 inputStream.read(dataBytes);
                 String sqlText = new String(dataBytes, "UTF-8");

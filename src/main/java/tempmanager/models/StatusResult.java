@@ -19,7 +19,7 @@ public class StatusResult {
         this.status = status;
     }
 
-    public String GetTimezone() {
+    public String getTimezone() {
         return timezone;
     }
 

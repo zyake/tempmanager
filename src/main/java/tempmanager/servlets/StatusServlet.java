@@ -27,7 +27,7 @@ public class StatusServlet extends ExtraHttpServlet {
             statusService.insertLogStatus(req.getHeader("User-Agent"), req.getRequestURI());
 
             StatusResult status = statusService.getTempratureStatus();
-            req.setAttribute("timezone", status.GetTimezone());
+            req.setAttribute("timezone", status.getTimezone());
             req.setAttribute("status", status.getStatus());
             req.setAttribute("weekly", status.getTempWeekly());
             req.setAttribute("monthly", status.getTempMonthly());
