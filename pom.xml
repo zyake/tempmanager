@@ -141,6 +141,8 @@
                 <threshold>Default</threshold>
                 <xmlOutput>true</xmlOutput>
                 <xmlOutputDirectory>target/site</xmlOutputDirectory>
+                <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+                <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
               </configuration>
             </plugin>
           </reportPlugins>
