@@ -24,15 +24,43 @@ public class PrefectureTempratureRecordJob extends AbstractTimerJob {
         try {
             JsonParser parser = Json.createParser(new URL("http://api.openweathermap.org/data/2.5/forecast?id=524901&APPID=8b48c138d380cabb23293764730fd977").openStream());
             while (parser.hasNext()) {
-                JsonParser.Event next = parser.next();
-                switch (next) {
-                    case KEY_NAME:
-                }
-
+//                JsonParser.Event next = parser.next();
+//                if ( next == JsonParser.Event.END_ARRAY) {
+//                    System.out.println(next);
+//                } if (next == JsonParser.Event.END_OBJECT) {
+//                    System.out.println(next);
+//                } if (next == JsonParser.Event.KEY_NAME) {
+//                    System.out.println(next);
+//                } if ( next == JsonParser.Event.START_ARRAY) {
+//                    System.out.println(next);
+//                } if (next == JsonParser.Event.VALUE_FALSE) {
+//                    System.out.println(next);
+//                } if ( next == JsonParser.Event.VALUE_NULL) {
+//                    System.out.println(next);
+//                } if(next == JsonParser.Event.VALUE_NUMBER) {
+//                    System.out.println(next);
+//                    if ( next == JsonParser.Event.END_ARRAY) {
+//                        System.out.println(next);
+//                    } if (next == JsonParser.Event.END_OBJECT) {
+//                        System.out.println(next);
+//                    } if (next == JsonParser.Event.KEY_NAME) {
+//                        System.out.println(next);
+//                    } if ( next == JsonParser.Event.START_ARRAY) {
+//                        System.out.println(next);
+//                    } if (next == JsonParser.Event.VALUE_FALSE) {
+//                        System.out.println(next);
+//                    } if ( next == JsonParser.Event.VALUE_NULL) {
+//                        System.out.println(next);
+//                    } if(next == JsonParser.Event.VALUE_NUMBER) {
+//                        System.out.println(next);
+//                    }
+//                }
+//
             }
         } catch (IOException e) {
             LOGGER.warn("Whether API call failed!", e);
             return;
         }
+
     }
 }

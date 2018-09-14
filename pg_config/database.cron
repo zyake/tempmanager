@@ -1,0 +1,2 @@
+* 23 * * * find /backups/archive_logs/ -type f -mtime +3 -delete
+* 23 * * * /bin/sh backup_postgres.sh
