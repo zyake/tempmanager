@@ -180,8 +180,6 @@ CREATE TABLE public.temprature_adjust (
 );
 
 
-ALTER TABLE public.temprature_adjust OWNER TO hoge;
-
 --
 -- Name: temprature_records; Type: TABLE; Schema: public; Owner: hoge
 --
@@ -194,8 +192,6 @@ CREATE TABLE public.temprature_records (
     timestamp_date date
 );
 
-
-ALTER TABLE public.temprature_records OWNER TO hoge;
 
 --
 -- Name: temprature_daily_summary; Type: MATERIALIZED VIEW; Schema: public; Owner: hoge
@@ -213,8 +209,6 @@ CREATE MATERIALIZED VIEW public.temprature_daily_summary AS
   WITH NO DATA;
 
 
-ALTER TABLE public.temprature_daily_summary OWNER TO hoge;
-
 --
 -- Name: temprature_monthly_summary; Type: MATERIALIZED VIEW; Schema: public; Owner: hoge
 --
@@ -230,8 +224,6 @@ CREATE MATERIALIZED VIEW public.temprature_monthly_summary AS
   GROUP BY (date_part('year'::text, temprature_daily_summary.timestamp_date)), (date_part('month'::text, temprature_daily_summary.timestamp_date))
   WITH NO DATA;
 
-
-ALTER TABLE public.temprature_monthly_summary OWNER TO hoge;
 
 --
 -- Name: adjusted_temprature_monthly_summary; Type: VIEW; Schema: public; Owner: hoge
@@ -253,8 +245,6 @@ CREATE VIEW public.adjusted_temprature_monthly_summary AS
    FROM public.temprature_monthly_summary;
 
 
-ALTER TABLE public.adjusted_temprature_monthly_summary OWNER TO hoge;
-
 --
 -- Name: adjusted_temprature_summary; Type: VIEW; Schema: public; Owner: hoge
 --
@@ -273,8 +263,6 @@ CREATE VIEW public.adjusted_temprature_summary AS
     temprature_daily_summary.count
    FROM public.temprature_daily_summary;
 
-
-ALTER TABLE public.adjusted_temprature_summary OWNER TO hoge;
 
 --
 -- Name: temprature_weekly_summary; Type: MATERIALIZED VIEW; Schema: public; Owner: hoge
@@ -295,8 +283,6 @@ CREATE MATERIALIZED VIEW public.temprature_weekly_summary AS
   WITH NO DATA;
 
 
-ALTER TABLE public.temprature_weekly_summary OWNER TO hoge;
-
 --
 -- Name: adjusted_temprature_weekly_summary; Type: VIEW; Schema: public; Owner: hoge
 --
@@ -316,8 +302,6 @@ CREATE VIEW public.adjusted_temprature_weekly_summary AS
    FROM public.temprature_weekly_summary;
 
 
-ALTER TABLE public.adjusted_temprature_weekly_summary OWNER TO hoge;
-
 --
 -- Name: ids; Type: TABLE; Schema: public; Owner: hoge
 --
@@ -326,8 +310,6 @@ CREATE TABLE public.ids (
     id integer
 );
 
-
-ALTER TABLE public.ids OWNER TO hoge;
 
 --
 -- Name: locations; Type: TABLE; Schema: public; Owner: hoge
@@ -342,8 +324,6 @@ CREATE TABLE public.locations (
 );
 
 
-ALTER TABLE public.locations OWNER TO hoge;
-
 --
 -- Name: locations_id_seq; Type: SEQUENCE; Schema: public; Owner: hoge
 --
@@ -356,8 +336,6 @@ CREATE SEQUENCE public.locations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.locations_id_seq OWNER TO hoge;
-
 --
 -- Name: log_status; Type: TABLE; Schema: public; Owner: hoge
 --
@@ -368,8 +346,6 @@ CREATE TABLE public.log_status (
     url character varying NOT NULL
 );
 
-
-ALTER TABLE public.log_status OWNER TO hoge;
 
 --
 -- Name: temprature_records_seq; Type: SEQUENCE; Schema: public; Owner: hoge
@@ -383,8 +359,6 @@ CREATE SEQUENCE public.temprature_records_seq
     CACHE 1;
 
 
-ALTER TABLE public.temprature_records_seq OWNER TO hoge;
-
 --
 -- Name: temprature_total_count; Type: MATERIALIZED VIEW; Schema: public; Owner: hoge
 --
@@ -394,8 +368,6 @@ CREATE MATERIALIZED VIEW public.temprature_total_count AS
    FROM public.temprature_records
   WITH NO DATA;
 
-
-ALTER TABLE public.temprature_total_count OWNER TO hoge;
 
 --
 -- Name: locations locations_pkey; Type: CONSTRAINT; Schema: public; Owner: hoge
