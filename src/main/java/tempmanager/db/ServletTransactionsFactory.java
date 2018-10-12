@@ -1,6 +1,7 @@
 package tempmanager.db;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import tempmanager.io.SecureDataAccessor;
 import tempmanager.io.ServletFIleAccessor;
 
 import javax.servlet.ServletContext;
@@ -20,7 +21,11 @@ public class ServletTransactionsFactory {
         dataSource.setDriverClassName(properties.getProperty("class"));
         dataSource.setUrl(properties.getProperty("url"));
         dataSource.setUsername(properties.getProperty("user"));
-        dataSource.setPassword(properties.getProperty("pass"));
+
+        SecureDataAccessor dataAccessor = new SecureDataAccessor(context.getResourceAsStream("/WEB-INF/classes/keystore.ks"));
+        String password = dataAccessor.decrypt(properties.getProperty("pass"));
+        dataSource.setPassword(password);
+
         dataSource.setDefaultAutoCommit(false);
         dataSource.setInitialSize(4);
         dataSource.setConnectionProperties("sslmode=require;"); //loggerLevel=TRACE;loggerFile=pgjdbc.log");
