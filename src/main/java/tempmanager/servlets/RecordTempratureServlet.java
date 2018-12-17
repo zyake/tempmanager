@@ -10,23 +10,18 @@ import java.util.function.Consumer;
 
 public class RecordTempratureServlet extends HttpServlet {
 
-    private final Consumer<Runnable> trn;
-
     private final TempratureService service;
 
-    public RecordTempratureServlet(Consumer<Runnable> trn, TempratureService service) {
-        this.trn = trn;
+    public RecordTempratureServlet(TempratureService service) {
         this.service = service;
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        trn.accept(()-> {
-            try {
-                service.recordTemprature(req.getReader().readLine());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        try {
+            service.recordTemprature(req.getReader().readLine());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

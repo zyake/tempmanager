@@ -3,37 +3,44 @@ package tempmanager.services;
 import org.apache.log4j.Logger;
 import tempmanager.models.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class TempratureService {
 
     private static final Logger LOGGER = Logger.getLogger(TempratureService.class);
 
+    private final Consumer<Runnable> writeTrns;
+
+    private final Consumer<Runnable> readonlyTrns;
+
     private final TempratureRepository repository;
 
     private final int MY_HOME_ID = 1;
 
-    public TempratureService(TempratureRepository repository) {
+    public TempratureService(Consumer<Runnable> writeTrns, Consumer<Runnable> readonlyTrns, TempratureRepository repository) {
+        this.writeTrns = writeTrns;
+        this.readonlyTrns = readonlyTrns;
         this.repository = repository;
     }
 
     public StatusResult getTempratureStatus() {
-        try {
-            String timeZone = repository.getTimeZone();
-            TempratureStatus tempratureStatus = repository.getTempratureStatus();
-            List<TempratureHistory> tempWeekly = repository.listTempratureWeeklySummary();
-            List<TempratureHistory> tempMonthly = repository.listTempratureMonthlySummary();
+        AtomicReference<StatusResult> result = new AtomicReference<>();
+        readonlyTrns.accept(()-> {
+            try {
+                String timeZone = repository.getTimeZone();
+                TempratureStatus tempratureStatus = repository.getTempratureStatus();
+                List<TempratureHistory> tempWeekly = repository.listTempratureWeeklySummary();
+                List<TempratureHistory> tempMonthly = repository.listTempratureMonthlySummary();
 
-            return new StatusResult(timeZone, tempWeekly, tempMonthly, tempratureStatus);
-        } catch (RuntimeException ex) {
-            LOGGER.error("execution failed.", ex);
-            throw ex;
-        }
+                result.set(new StatusResult(timeZone, tempWeekly, tempMonthly, tempratureStatus));
+            } catch (RuntimeException ex) {
+                LOGGER.error("execution failed.", ex);
+                throw ex;
+            }
+        });
+        return  result.get();
     }
 
     /**
@@ -42,26 +49,41 @@ public class TempratureService {
      * @param toolLog
      */
     public void recordTemprature(String toolLog) {
-        LOGGER.info("tool log=" + toolLog);
-        try {
-            String temp = toolLog.split(" ")[3];
-            float temprature = Float.parseFloat(temp);
-            repository.updateTemprature(temprature, MY_HOME_ID);
-        } catch (RuntimeException ex) {
-            LOGGER.error("failed!: " + toolLog, ex);
-            throw ex;
-        }
+        writeTrns.accept(()-> {
+            LOGGER.info("tool log=" + toolLog);
+            try {
+                String temp = toolLog.split(" ")[3];
+                float temprature = Float.parseFloat(temp);
+                repository.updateTemprature(temprature, MY_HOME_ID);
+            } catch (RuntimeException ex) {
+                LOGGER.error("failed!: " + toolLog, ex);
+                throw ex;
+            }
+        });
     }
 
     public int getRecordTotal() {
-        return repository.getRecordCount();
+        AtomicReference<Integer> result = new AtomicReference<>();
+        writeTrns.accept(()-> {
+            int count = repository.getRecordCount();
+            result.set(count);
+        });
+        return result.get();
     }
 
     public List<TempratureStatus> listMonthlyTempDataSlow(int year, int month) {
-        return repository.listMonthlyTempDataSlow(year, month);
+        AtomicReference<List<TempratureStatus>> result = new AtomicReference<>();
+        readonlyTrns.accept(()-> {
+            List<TempratureStatus> tempratureStatuses = repository.listMonthlyTempDataSlow(year, month);
+            result.set(tempratureStatuses);
+        });
+
+        return result.get();
     }
 
     public void insertLogStatus(String userAgent, String uri) {
-        repository.insertLogStatus(userAgent, uri);
+        writeTrns.accept(()-> {
+            repository.insertLogStatus(userAgent, uri);
+        });
     }
 }

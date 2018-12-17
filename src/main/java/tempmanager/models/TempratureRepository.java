@@ -2,10 +2,6 @@ package tempmanager.models;
 
 import tempmanager.db.QueryExecutor;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.List;
 
 public class TempratureRepository {

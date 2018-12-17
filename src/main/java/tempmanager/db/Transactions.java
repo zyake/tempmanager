@@ -9,7 +9,9 @@ import java.util.function.Supplier;
 
 public class Transactions {
 
-    private static final ThreadLocal<Connection> currentConnection = new InheritableThreadLocal<>();
+    private final static ThreadLocal<Transactions> currentActiveTransaction = new InheritableThreadLocal<>();
+
+    private final ThreadLocal<Connection> currentConnection = new InheritableThreadLocal<>();
 
     private final DataSource dataSource;
 
@@ -30,6 +32,7 @@ public class Transactions {
     }
 
     protected void runTrn(Runnable trn) {
+        currentActiveTransaction.set(this);
         Connection connection = null;
         try {
             if (currentConnection.get() != null) {
@@ -51,6 +54,7 @@ public class Transactions {
             }
             exceptionHandler.accept(e);
         } finally {
+            currentActiveTransaction.set(null);
             if (connection != null) {
                 try {
                     connection.close();
@@ -63,14 +67,20 @@ public class Transactions {
     }
 
     public Supplier<Connection> getConnectionAccessor() {
-        return () -> currentConnection.get();
-    }
-
-    public QueryExecutor getQueryExecutor(String sqlDir, BiConsumer<String, SQLException> consumer) {
-        return new BasicQueryExecutorFactory().newInstance(sqlDir, getConnectionAccessor(), consumer);
+        return () ->  {
+            Connection conn = currentConnection.get();
+            if (conn == null) {
+                throw new RuntimeException("Transaction has not been started!");
+            }
+            return conn;
+        };
     }
 
     public Consumer<Runnable> getTransactionRunner() {
         return (trn)-> runTrn(trn);
+    }
+
+    public static Transactions getCurrentActiveTransaction() {
+        return currentActiveTransaction.get();
     }
 }

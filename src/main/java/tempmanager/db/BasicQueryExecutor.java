@@ -129,4 +129,9 @@ public class BasicQueryExecutor implements QueryExecutor {
     public Map<String, String> getSqlMap() {
         return this.sqlMap;
     }
+
+    @Override
+    public boolean isReadOnly() {
+        return false;
+    }
 }

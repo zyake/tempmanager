@@ -9,8 +9,8 @@ import java.util.Properties;
 
 public class ServletTransactionsFactory {
 
-    public Transactions createTransactions(ServletContext context) {
-        Properties properties = new ServletFIleAccessor().readProperties(context,"/WEB-INF/classes/jdbc.properties");
+    public Transactions createTransactions(ServletContext context, String dataFile) {
+        Properties properties = new ServletFIleAccessor().readProperties(context,"/WEB-INF/classes/" + dataFile);
         try {
             Class.forName(properties.getProperty("class"));
         } catch (ClassNotFoundException e) {

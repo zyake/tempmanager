@@ -19,6 +19,17 @@ public class BasicQueryExecutorFactory {
         throw new RuntimeException(String.format("SQL exescution failed!: SQL=%s, SQL state=%s", sql, exp.getSQLState()), exp);
     };
 
+    public Supplier<Connection> createTransactionMappingAccessor(Transactions... trns) {
+        Map<Transactions, Supplier<Connection>> hashMap = new HashMap<>();
+        for (Transactions trn : trns) {
+            hashMap.put(trn, trn.getConnectionAccessor());
+        }
+        return ()-> {
+          Transactions activeTrn = Transactions.getCurrentActiveTransaction();
+          return hashMap.get(activeTrn).get();
+        };
+    }
+
     public QueryExecutor newInstance(String rootDir, Supplier<Connection> connectionAccesser, BiConsumer<String, SQLException> exceptionHandler) {
         Map<String, String> sqlMap = new HashMap<>();
         File file = new File(rootDir);

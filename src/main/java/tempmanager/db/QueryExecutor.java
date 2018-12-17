@@ -24,4 +24,6 @@ public interface QueryExecutor {
     void setThreadLocalStatementModifier(SQLThrowableConsumer<PreparedStatement> statement);
 
     Map<String, String> getSqlMap();
+
+    boolean isReadOnly();
 }

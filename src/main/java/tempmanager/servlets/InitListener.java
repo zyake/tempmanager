@@ -15,7 +15,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import java.sql.Connection;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 @WebListener
 public class InitListener implements ServletContextListener {
@@ -26,16 +28,21 @@ public class InitListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         ServletContext servletContext = servletContextEvent.getServletContext();
 
-        Transactions trns = new ServletTransactionsFactory().createTransactions(servletContext);
         String sqlDirPath = servletContext.getRealPath("/WEB-INF/sqls");
-        QueryExecutor queryExecutor = trns.getQueryExecutor(sqlDirPath, BasicQueryExecutorFactory.DEFAULT_EXCEPTION_HANDLER);
+
+        Transactions trns = new ServletTransactionsFactory().createTransactions(servletContext, "jdbc.properties");
+        Transactions readonlyTrns = new ServletTransactionsFactory().createTransactions(servletContext, "jdbc_readonly.properties");
+
+        BasicQueryExecutorFactory executorFactory = new BasicQueryExecutorFactory();
+        Supplier<Connection> accessor = executorFactory.createTransactionMappingAccessor(trns, readonlyTrns);
+        QueryExecutor queryExecutor = executorFactory.newInstance(sqlDirPath, accessor, BasicQueryExecutorFactory.DEFAULT_EXCEPTION_HANDLER);
 
         TempratureRepository tempratureRepository = new TempratureRepository(queryExecutor);
-        TempratureService statusService = new TempratureService(tempratureRepository);
+        TempratureService statusService = new TempratureService(trns.getTransactionRunner(), readonlyTrns.getTransactionRunner(), tempratureRepository);
 
         new ServletContextFactory(servletContext)
-                .add("/status", new StatusServlet(trns.getTransactionRunner(), statusService))
-                .add("/record", new RecordTempratureServlet(trns.getTransactionRunner(), statusService))
+                .add("/status", new StatusServlet(statusService))
+                .add("/record", new RecordTempratureServlet(statusService))
                 .add("/list_monthly_temp_slow", new SlowListMonthlyTempDataServlet(trns.getTransactionRunner(), statusService));
 
         Properties serverConfig = new ServletFIleAccessor().readProperties(servletContext,"/WEB-INF/classes/mail.properties");
