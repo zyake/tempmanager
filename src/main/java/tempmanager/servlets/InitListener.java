@@ -39,7 +39,6 @@ public class InitListener implements ServletContextListener {
 
         TempratureRepository tempratureRepository = new TempratureRepository(queryExecutor);
         TempratureService statusService = new TempratureService(trns.getTransactionRunner(), readonlyTrns.getTransactionRunner(), tempratureRepository);
-
         new ServletContextFactory(servletContext)
                 .add("/status", new StatusServlet(statusService))
                 .add("/record", new RecordTempratureServlet(statusService))
